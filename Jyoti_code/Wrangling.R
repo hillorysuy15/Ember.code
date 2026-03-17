@@ -1,5 +1,5 @@
 
-### Wrangling Part ----
+### Loading library and files
 
 library(readxl)
 library(tidyverse)
@@ -7,27 +7,36 @@ library(dplyr)
 library(lubridate)
 library(ggplot2)
 library(patchwork)
-A <- read_excel("Isolate A.xlsx")
+A <- read_excel("~/Documents/BCB5200/Isolate A.xlsx")
 
-B <- read_excel("Isolate B .xlsx")
-G <- read_excel("Isolate G .xlsx")
-H <- read_excel("Isolate H .xlsx")
+B <- read_excel("~/Documents/BCB5200/Isolate B .xlsx")
+G <- read_excel("~/Documents/BCB5200/Isolate G .xlsx")
+H <- read_excel("~/Documents/BCB5200/Isolate H .xlsx")
+
+
+### Wrangling Part ----
+
 A1 <- A %>% 
   mutate(
     ave_blank = rowMeans(across(c(A12, B12, C12)), na.rm = TRUE),
     A_norm = pmax(A1 - ave_blank, 0),
     B_norm = pmax(B1 - ave_blank, 0),
     C_norm = pmax(C1 - ave_blank, 0),
-    ave_norm_WT = rowMeans(across(c(A_norm, B_norm, C_norm)), na.rm = TRUE)
+    ave_norm_WT = rowMeans(across(c(A_norm, B_norm, C_norm)), na.rm = TRUE),
+    minutes = (row_number() - 1) * 10,  # 0, 10, 20, 30…
+    hour = minutes / 60 
   )
 
-View(B)
-
+A2 <- A1 %>%
+  mutate(
+    #Time_parsed = ymd_hms(Time),
+                     # convert minutes to hours
+  )
 # Work on Lubridate ----
-A2 <- ymd_hms(A1$Time)
-minute <- minute(datetime_object)
-View(A2)
 
+
+
+                            
 ### Visualizations ----
 p1 <- ggplot(A1, aes(x = Time_min, y = Mean_WT_Norm)) +
   geom_point(color = "lightblue") +
